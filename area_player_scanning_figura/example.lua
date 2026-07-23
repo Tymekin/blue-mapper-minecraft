@@ -22,36 +22,38 @@ function events.world_tick()
 	if host:isHost() then
 		if timer >= delay then
 			a:sendAsync(function(result, status)
-				local data = parseJson(result)
-				local newTable = {}
-				for i,line in ipairs(data['players']) do
-					local x = tonumber(line['position']['x'])
-					local z = tonumber(line['position']['z'])
-					if x > topleft_x and line['foreign'] == false then
-						if x < bottomright_x then
-							if z > topleft_z then
-								if z < bottomright_z then
-									if line['name'] ~= player:getName() then
-										newTable[line['name']] = true
+				if status == 200 then
+					local data = parseJson(result)
+					local newTable = {}
+					for i,line in ipairs(data['players']) do
+						local x = tonumber(line['position']['x'])
+						local z = tonumber(line['position']['z'])
+						if x > topleft_x and line['foreign'] == false then
+							if x < bottomright_x then
+								if z > topleft_z then
+									if z < bottomright_z then
+										if line['name'] ~= player:getName() then
+											newTable[line['name']] = true
+										end
 									end
 								end
 							end
 						end
 					end
-				end
-				for i, line in pairs(newTable) do
-					if newTable[i] ~= oldTable[i] then
-						print(i .. ' entered ' .. name .. '!')
+					for i, line in pairs(newTable) do
+						if newTable[i] ~= oldTable[i] then
+							print(i .. ' entered ' .. name .. '!')
+						end
 					end
-				end
-				for i, line in pairs(oldTable) do
-					if oldTable[i] ~= newTable[i] then
-						print(i .. ' left ' .. name .. '!')
+					for i, line in pairs(oldTable) do
+						if oldTable[i] ~= newTable[i] then
+							print(i .. ' left ' .. name .. '!')
+						end
 					end
-				end
-				oldTable = {}
-				for orig_key, orig_value in pairs(newTable) do
-					oldTable[orig_key] = orig_value
+					oldTable = {}
+					for orig_key, orig_value in pairs(newTable) do
+						oldTable[orig_key] = orig_value
+					end
 				end
 			end)
 			timer = 0
