@@ -220,7 +220,8 @@ function events.tick()
 				end
 			end
 			timer = timer - 1
-		elseif timer == 0 then
+		end
+		if timer == 0 then
 			print("Cooldown zeroed, stopping locating!")
 			found = false
 			on_track = false
